@@ -1,4 +1,5 @@
-//branch master
+/*jslint nomen: true */
+/*jslint node:true */
 
 var ip = require('ip');
 var request = require("request");
@@ -44,6 +45,7 @@ exports.getRabbitMQAddress = function () {
 
 
 exports.sendRMQWorker = function (rabbitMQ, message) {
+    "use strict";
     amqp.connect(rabbitMQ.rabbitMQAuthString()).then(function (conn) {
         return when(conn.createChannel().then(function (ch) {
             var q = rabbitMQ.queue,
@@ -65,6 +67,7 @@ exports.sendRMQWorker = function (rabbitMQ, message) {
 // promise - getOldNumerous
 
 var getOldNumerous = function (appKey) {
+    "use strict";
     return new Promise(function (resolve, reject) {
 
         request({
@@ -78,7 +81,7 @@ var getOldNumerous = function (appKey) {
 
             if (response.statusCode !== 200) {
                 //console.log(error);
-                 console.log(response);
+                console.log(response);
                 reject(error);
             } else {
 
@@ -93,6 +96,7 @@ var getOldNumerous = function (appKey) {
 // promise - updateNumerousKey
 
 var updateNumerousKey = function (appKey, value) {
+    "use strict";
     return new Promise(function (resolve, reject) {
         request({
             headers: {'Authorization': "Basic bm1yc19PUlJWdzhqWkRIQVA6"},
@@ -102,7 +106,7 @@ var updateNumerousKey = function (appKey, value) {
 
         }, function (error, response, body) {
             if (error) {
-                reject(error)
+                reject(error);
             } else {
                 resolve();
             }
@@ -112,7 +116,8 @@ var updateNumerousKey = function (appKey, value) {
 };
 
 
-exports.updateNumerous = function (appID,value) {
+exports.updateNumerous = function (appID, value) {
+    "use strict";
     return new Promise(function (resolve, reject) {
 
         var success = "";
@@ -122,14 +127,14 @@ exports.updateNumerous = function (appID,value) {
                 updateNumerousKey(appID, oldVal + value);
                 return resolve();
             }).catch(function (error) {
-                console.log('Something had an error',error);
+                console.log('Something had an error', error);
                 return reject();
-        });
+            });
     });
 };
 
 exports.getRMQWorker = function (rabbitMQ) {
-
+    "use strict";
     return new Promise(function (resolve, reject) {
 
         amqp.connect(rabbitMQ.rabbitMQAuthString()).then(function (conn) {
@@ -137,20 +142,21 @@ exports.getRMQWorker = function (rabbitMQ) {
             return conn.createChannel().then(function (ch) {
                 var ok = ch.assertQueue(rabbitMQ.queue, {durable: true});
                 ok = ok.then(function () { ch.prefetch(1); });
+                function doWork(msg) {
+                    var body = msg.content.toString();
+                    console.log(" [x] Received '%s'", body);
+                    resolve({body: body, ch: ch, msg: msg});
+                }
                 ok = ok.then(function () {
                     ch.consume(rabbitMQ.queue, doWork, {noAck: false});
                     console.log(" [*] Waiting for messages. To exit press CTRL+C");
                 });
                 return ok;
 
-                function doWork(msg) {
-                    var body = msg.content.toString();
-                    console.log(" [x] Received '%s'", body);
-                    resolve ({body: body, ch: ch, msg: msg});
-                }
+
             });
         }).then(null, console.warn);
-        }).catch(function () {
+    }).catch(function () {
         reject(msg);
     });
 
@@ -168,6 +174,7 @@ var rabbitMQ = {
     message: 'HelloWorld',
     durable: 'true',
     trunctMessage: function () {
+        "use strict";
         if (rabbitMQ.message.length > 100) {
             return "Message to large to display. Sent " + rabbitMQ.message.length;
         } else {
@@ -204,91 +211,99 @@ var msgEmail = {
     body: 'body text',
     htmlData: '<b>H</b>tml body',
     getConfig: function () {
+        "use strict";
         return this;
     },
     sendText: function (body) {
         //var Promise =  require('bluebird');
+        "use strict";
         if (typeof body !== 'undefined') {
             this.body = body;
         }
         //var ret;
-        var email = require('emailjs');
-        var server = email.server.connect({host: "smtp.mt.com"});
-        var message = {
-            text:    this.body,
-            from:    this.from,
-            to:      this.to,
-            cc:      "",
-            subject: this.subject
-        };
+        var email = require('emailjs'),
+            server = email.server.connect({host: "smtp.mt.com"}),
+            message = {
+                text: this.body,
+                from: this.from,
+                to: this.to,
+                cc: "",
+                subject: this.subject
+            };
         return new Promise(function (resolve, reject) {
-        server.send(message, function(err, message) {
+            server.send(message, function (err, message) {
             //console.log(err || message);
             //console.log(err);
 
-            if (err !== null) {
-                console.log('sendHtml: Error');
-                reject('sendHtml: Error');
-            } else {
-                console.log('sendHtml: No Error');
-                resolve('sendHtml: No Error');
-            }
+                if (err !== null) {
+                    console.log('sendHtml: Error');
+                    reject('sendHtml: Error');
+                } else {
+                    console.log('sendHtml: No Error');
+                    resolve('sendHtml: No Error');
+                }
+            });
         });
-        })
     },
     sendHtml: function (html) {
+        "use strict";
         if (typeof html !== 'undefined') {
             this.htmlData = html;
         }
-        var email = require('emailjs');
-        var server = email.server.connect({host: this.smtpServer});
-
-        var message = {
-            text:    this.body,
-            from:    this.from,
-            to:      this.to,
-            cc:      "",
-            subject: this.subject,
-    attachment:
-    [
-      {data: this.htmlData, alternative: true}
-    ]
-        };
+        var email = require('emailjs'),
+            server = email.server.connect({host: this.smtpServer}),
+            message = {
+                text: this.body,
+                from: this.from,
+                to: this.to,
+                cc: "",
+                subject: this.subject,
+                attachment:
+                    [
+                        {data: this.htmlData, alternative: true}
+                    ]
+            };
         return new Promise(function (resolve, reject) {
-        server.send(message, function(err, message) {
+            server.send(message, function (err, message) {
             //console.log(err || message);
             //console.log(err);
 
-            if (err !== null) {
-                console.log('sendHtml: Error');
-                reject('sendHtml: Error');
-            } else {
-                console.log('sendHtml: No Error');
-                resolve('sendHtml: No Error');
-            }
+                if (err !== null) {
+                    console.log('sendHtml: Error');
+                    reject('sendHtml: Error');
+                } else {
+                    console.log('sendHtml: No Error');
+                    resolve('sendHtml: No Error');
+                }
+            });
         });
-    })
     },
     toString: function () {
+        "use strict";
         return serialize.serialize(this);
     },
     sendToRabbit: function () {
         //var t = serialize.serialize(this);
+        "use strict";
         cdlib.rabbitMQ.routingKey = "email";
         cdlib.rabbitMQ.publishTopic(this.toString());
     },
     type: "html",
     sendEmail: function () {
+        "use strict";
         this.sendText()
             .then(function () {
-            console.log("sendEmail true");
-            //return true;
-          }).catch(function () {
-            console.log("sendEmail false");
+                console.log("sendEmail true");
+            }).catch(function (err) {
+                console.log("sendEmail false");
             //return false;
-          })
+            });
     }
- };
+};
+
+
+
+
 
 
 exports.rabbitMQ = rabbitMQ;
