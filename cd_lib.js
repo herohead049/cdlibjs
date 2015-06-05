@@ -1,6 +1,10 @@
 /*jslint nomen: true */
 /*jslint node:true */
 
+// updated 5-Jun-2015
+// added getRedis
+
+
 var ip = require('ip');
 var request = require("request");
 var Promise = require('bluebird');
