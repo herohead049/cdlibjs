@@ -1,6 +1,9 @@
 /*jslint nomen: true */
 /*jslint node:true */
 
+
+// version 1.0.1
+
 // updated 5-Jun-2015
 // added getRedis
 
