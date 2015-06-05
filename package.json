@@ -1,0 +1,17 @@
+{
+    "name": "misc" ,
+    "version": "0.0.1",
+    "description": "misc",
+    "author": "Craig David"
+,
+"dependencies" : {
+    "lodash": "",
+    "ip": "",
+    "request": "",
+    "bluebird": "",
+    "when": "",
+    "amqplib": "",
+    "emailjs": "",
+    "node-serialize": ""
+    }
+}
