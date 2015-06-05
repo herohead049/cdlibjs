@@ -43,6 +43,21 @@ exports.getRabbitMQAddress = function () {
     return site;
 };
 
+exports.getRedisAddress = function () {
+    'use strict';
+    var site = "";
+    switch (checkLocation()) {
+    case 'home':
+        site = '192.168.50.8';
+        break;
+    default:
+        site = 'backupreport.eu.mt.mtnet';
+        break;
+    }
+    return site;
+};
+
+
 
 exports.sendRMQWorker = function (rabbitMQ, message) {
     "use strict";
@@ -299,7 +314,7 @@ var msgEmail = {
             //return false;
             });
     }
-};
+};addGetRedis
 
 
 -
