@@ -43,6 +43,8 @@ exports.getRabbitMQAddress = function () {
     return site;
 };
 
+// return redis Address
+
 exports.getRedisAddress = function () {
     'use strict';
     var site = "";
