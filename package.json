@@ -1,7 +1,7 @@
 {
-    "name": "misc" ,
-    "version": "0.0.1",
-    "description": "misc",
+    "name": "cdlib" ,
+    "version": "1.0.1",
+    "description": "group of library",
     "author": "Craig David"
 ,
 "dependencies" : {
