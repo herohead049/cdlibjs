@@ -1,9 +1,6 @@
 /*jslint nomen: true */
 /*jslint node:true */
 
-
-
-
 var request = require("request");
 var Promise = require('bluebird');
 var amqp = require('amqplib');
