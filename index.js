@@ -2,44 +2,24 @@
 /*jslint node:true */
 
 
-// version 1.0.1
-
-// updated 5-Jun-2015
-// added getRedis
 
 
-var ip = require('ip');
 var request = require("request");
 var Promise = require('bluebird');
 var amqp = require('amqplib');
 var when = require('when');
 var email = require('emailjs');
 var serialize = require('node-serialize');
+var server = require('../cd_lib/lib/server.js');
 
 
 var cdlib = require('../cd_lib');
 
-function checkLocation() {
-    'use strict';
-    var ipAddress = ip.address(),
-        arr = ipAddress.split('.'),
-        site = "",
-        compare = arr[0];
-    switch (compare) {
-    case '192':
-        site = 'home';
-        break;
-    default:
-        site = 'work';
-        break;
-    }
-    return site;
-}
 
 exports.getRabbitMQAddress = function () {
     'use strict';
     var site = "";
-    switch (checkLocation()) {
+    switch (server.checkLocation()) {
     case 'home':
         site = '192.168.50.91';
         break;
@@ -55,7 +35,7 @@ exports.getRabbitMQAddress = function () {
 exports.getRedisAddress = function () {
     'use strict';
     var site = "";
-    switch (checkLocation()) {
+    switch (server.checkLocation()) {
     case 'home':
         site = '192.168.50.8';
         break;
