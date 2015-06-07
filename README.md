@@ -1,3 +1,3 @@
-# test
+# cdlibjs  
 
-test Master
+Changed the default name from cdlib.js to index.js
