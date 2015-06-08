@@ -7,13 +7,6 @@ Main topics are:
 * redis
 * EMC Networker 
 
-
-Changed the default name from cdlib.js to index.js
-
-Change:
-
-* created : server.js
-
 Methods:
 
 * getRedisAddress()
