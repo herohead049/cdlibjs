@@ -14,5 +14,9 @@ Change:
 
 * created : server.js
 
+Methods:
+
+* getRedisAddress()
+* getRabbitMQAddress();
 
 

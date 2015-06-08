@@ -11,7 +11,7 @@ var server = require('../cd_lib/lib/server.js');
 
 var cdlib = require('../cd_lib');
 
-exports.checkLocation = server.checkLocation;
+//exports.checkLocation = server.checkLocation;
 exports.getRedisAddress = server.getRedisAddress;
 exports.getRabbitMQAddress = server.getRabbitMQAddress;
 
