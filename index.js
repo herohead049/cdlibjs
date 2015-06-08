@@ -9,40 +9,11 @@ var email = require('emailjs');
 var serialize = require('node-serialize');
 var server = require('../cd_lib/lib/server.js');
 
-
 var cdlib = require('../cd_lib');
 
-
-exports.getRabbitMQAddress = function () {
-    'use strict';
-    var site = "";
-    switch (server.checkLocation()) {
-    case 'home':
-        site = '192.168.50.91';
-        break;
-    default:
-        site = 'us01s-netops02.am.mt.mtnet';
-        break;
-    }
-    return site;
-};
-
-// return redis Address
-
-exports.getRedisAddress = function () {
-    'use strict';
-    var site = "";
-    switch (server.checkLocation()) {
-    case 'home':
-        site = '192.168.50.8';
-        break;
-    default:
-        site = 'backupreport.eu.mt.mtnet';
-        break;
-    }
-    return site;
-};
-
+exports.checkLocation = server.checkLocation;
+exports.getRedisAddress = server.getRedisAddress;
+exports.getRabbitMQAddress = server.getRabbitMQAddress;
 
 
 exports.sendRMQWorker = function (rabbitMQ, message) {
