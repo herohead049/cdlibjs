@@ -7,9 +7,9 @@ var amqp = require('amqplib');
 var when = require('when');
 var email = require('emailjs');
 var serialize = require('node-serialize');
-var server = require('../cd_lib/lib/server.js');
+var server = require('../cdlib/lib/server.js');
 
-var cdlib = require('../cd_lib');
+//var cdlib = require('cdlib');
 
 //exports.checkLocation = server.checkLocation;
 exports.getRedisAddress = server.getRedisAddress;
@@ -135,7 +135,7 @@ exports.getRMQWorker = function (rabbitMQ) {
 };
 
 var rabbitMQ = {
-    server: cdlib.getRabbitMQAddress(),
+    server: server.getRabbitMQAddress(),
     username: 'test',
     password: 'test',
     virtualHost: '/test',
@@ -257,8 +257,8 @@ var msgEmail = {
     sendToRabbit: function () {
         //var t = serialize.serialize(this);
         "use strict";
-        cdlib.rabbitMQ.routingKey = "email";
-        cdlib.rabbitMQ.publishTopic(this.toString());
+        rabbitMQ.routingKey = "email";
+        rabbitMQ.publishTopic(this.toString());
     },
     type: "html",
     sendEmail: function () {

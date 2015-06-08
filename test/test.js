@@ -1,3 +1,3 @@
-var cdlib = require('../../cd_lib');
+var cdlib = require('../index.js');
 
 console.log(cdlib.getRabbitMQAddress());
