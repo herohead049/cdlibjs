@@ -1,0 +1,22 @@
+{
+  "name": "cdlib",
+  "version": "1.1.2",
+  "description": "Personal use only",
+  "main": "index.js",
+  "author": "Craig David",
+  "dependencies": {
+    "amqplib": "^0.3.2",
+    "bluebird": "^2.9.27",
+    "colors": "^1.1.0",
+    "emailjs": "^0.3.16",
+    "ip": "^0.3.3",
+    "lodash": "^3.9.3",
+    "node-serialize": "0.0.4",
+    "request": "^2.57.0",
+    "when": "^3.7.3"
+  },
+    "repository" :
+        { "type" : "git",
+        "url" : "https://github.com/herohead049/cdlibjs.git"
+        }
+}
