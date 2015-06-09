@@ -1,7 +1,7 @@
 {
   "name": "cdlib",
   "version": "1.1.2",
-  "description": "Personal use",
+  "description": "Personal use only",
   "main": "index.js",
   "author": "Craig David",
   "dependencies": {
