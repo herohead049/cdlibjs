@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-# cdllibjs
-=======
 # cdlibjs
 ##### code : nodejs
 
@@ -16,4 +13,3 @@ Methods:
 * getRabbitMQAddress();
 
 
->>>>>>> origin/1.1.2
