@@ -11,5 +11,5 @@ Methods:
 
 * getRedisAddress()
 * getRabbitMQAddress();
-
+* cool
 
