@@ -7,13 +7,22 @@ var amqp = require('amqplib');
 var when = require('when');
 var email = require('emailjs');
 var serialize = require('node-serialize');
-var server = require('../cdlib/lib/server.js');
+//var server = require('../cdlib/lib/server.js');
+//var email = require('../cdlib/lib/email.js');
+
+var server = require('../cdlibjs/lib/server.js');
+var email = require('../cdlibjs/lib/email.js');
+var rabbitmq = require('../cdlibjs/lib/rabbitmq.js');
 
 //var cdlib = require('cdlib');
 
 //exports.checkLocation = server.checkLocation;
 exports.getRedisAddress = server.getRedisAddress;
 exports.getRabbitMQAddress = server.getRabbitMQAddress;
+exports.msgEmail = email.msgEmail;
+exports.sendEmailHtml = email.sendEmailHtml;
+exports.sendEMailToRabbit = rabbitmq.sendEMailToRabbit;
+exports.rabbitMQ = rabbitmq.rabbitMQ;
 
 
 exports.sendRMQWorker = function (rabbitMQ, message) {
@@ -67,11 +76,11 @@ var getOldNumerous = function (appKey) {
 
 // promise - updateNumerousKey
 
-var updateNumerousKey = function (appKey, value) {
+var updateNumerousKey = function (appKey, value, auth) {
     "use strict";
     return new Promise(function (resolve, reject) {
         request({
-            headers: {'Authorization': "Basic bm1yc19PUlJWdzhqWkRIQVA6"},
+            headers: {'Authorization': +auth},
             url: 'https://api.numerousapp.com/v1/metrics/' + appKey + '/events',
             method: 'POST',
             body: '{"value": "' + value + '"}'
@@ -134,144 +143,7 @@ exports.getRMQWorker = function (rabbitMQ) {
 
 };
 
-var rabbitMQ = {
-    server: server.getRabbitMQAddress(),
-    username: 'test',
-    password: 'test',
-    virtualHost: '/test',
-    queue: 'hello',
-    exchange: 'main.exchange',
-    exchangeType: 'topic',
-    routingKey: 'info',
-    message: 'HelloWorld',
-    durable: 'true',
-    trunctMessage: function () {
-        "use strict";
-        if (rabbitMQ.message.length > 100) {
-            return "Message to large to display. Sent " + rabbitMQ.message.length;
-        } else {
-            return rabbitMQ.message;
-        }
-    },
-    rabbitMQAuthString: function () {
-        "use strict";
-        return 'amqp://' + this.username + ':' + this.password + '@' + this.server + this.virtualHost;
-    },
-    publishTopic: function (msg) {
-        "use strict";
-        if (typeof msg !== 'undefined') {
-            this.message = msg;
-        }
-        amqp.connect(rabbitMQ.rabbitMQAuthString()).then(function (conn) {
-            return when(conn.createChannel().then(function (ch) {
-                var ok = ch.assertExchange(rabbitMQ.exchange, rabbitMQ.exchangeType, {durable: rabbitMQ.durable});
-                return ok.then(function () {
-                    ch.publish(rabbitMQ.exchange, rabbitMQ.routingKey, new Buffer(rabbitMQ.message));
-                    console.log(" [x] Sent %s:'%s'", rabbitMQ.routingKey, rabbitMQ.trunctMessage());
-                    return ch.close();
-                });
-            })).ensure(function () { conn.close(); });
-        }).then(null, console.log);
-    }
-};
 
-var msgEmail = {
-    smtpServer: 'smtp.mt.com',
-    to: 'craig.david@mt.com',
-    from: 'craig.david@mt.com',
-    subject: 'test subject',
-    body: 'body text',
-    htmlData: '<b>H</b>tml body',
-    getConfig: function () {
-        "use strict";
-        return this;
-    },
-    sendText: function (body) {
-        //var Promise =  require('bluebird');
-        "use strict";
-        if (typeof body !== 'undefined') {
-            this.body = body;
-        }
-        //var ret;
-        var email = require('emailjs'),
-            server = email.server.connect({host: "smtp.mt.com"}),
-            message = {
-                text: this.body,
-                from: this.from,
-                to: this.to,
-                cc: "",
-                subject: this.subject
-            };
-        return new Promise(function (resolve, reject) {
-            server.send(message, function (err, message) {
-            //console.log(err || message);
-            //console.log(err);
 
-                if (err !== null) {
-                    console.log('sendHtml: Error');
-                    reject('sendHtml: Error');
-                } else {
-                    console.log('sendHtml: No Error');
-                    resolve('sendHtml: No Error');
-                }
-            });
-        });
-    },
-    sendHtml: function (html) {
-        "use strict";
-        if (typeof html !== 'undefined') {
-            this.htmlData = html;
-        }
-        var email = require('emailjs'),
-            server = email.server.connect({host: this.smtpServer}),
-            message = {
-                text: this.body,
-                from: this.from,
-                to: this.to,
-                cc: "",
-                subject: this.subject,
-                attachment:
-                    [
-                        {data: this.htmlData, alternative: true}
-                    ]
-            };
-        return new Promise(function (resolve, reject) {
-            server.send(message, function (err, message) {
-            //console.log(err || message);
-            //console.log(err);
 
-                if (err !== null) {
-                    console.log('sendHtml: Error');
-                    reject('sendHtml: Error');
-                } else {
-                    console.log('sendHtml: No Error');
-                    resolve('sendHtml: No Error');
-                }
-            });
-        });
-    },
-    toString: function () {
-        "use strict";
-        return serialize.serialize(this);
-    },
-    sendToRabbit: function () {
-        //var t = serialize.serialize(this);
-        "use strict";
-        rabbitMQ.routingKey = "email";
-        rabbitMQ.publishTopic(this.toString());
-    },
-    type: "html",
-    sendEmail: function () {
-        "use strict";
-        this.sendText()
-            .then(function () {
-                console.log("sendEmail true");
-            }).catch(function (err) {
-                console.log("sendEmail false");
-            //return false;
-            });
-    }
-};
 
-exports.rabbitMQ = rabbitMQ;
-exports.msgEmail = msgEmail;
