@@ -80,7 +80,7 @@ var updateNumerousKey = function (appKey, value, auth) {
     "use strict";
     return new Promise(function (resolve, reject) {
         request({
-            headers: {'Authorization': + auth},
+            headers: {'Authorization': +auth},
             url: 'https://api.numerousapp.com/v1/metrics/' + appKey + '/events',
             method: 'POST',
             body: '{"value": "' + value + '"}'
