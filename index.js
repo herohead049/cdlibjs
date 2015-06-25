@@ -133,17 +133,9 @@ exports.getRMQWorker = function (rabbitMQ) {
                     console.log(" [*] Waiting for messages. To exit press CTRL+C");
                 });
                 return ok;
-
-
             });
         }).then(null, console.warn);
     }).catch(function () {
         reject(msg);
     });
-
 };
-
-
-
-
-
