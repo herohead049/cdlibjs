@@ -43,7 +43,7 @@ var getOldNumerous = function (appKey) {
     return new Promise(function (resolve, reject) {
 
         request({
-            headers: {'Authorization': "Basic bm1yc19PUlJWdzhqWkRIQVA6"},
+            headers: {'Authorization': "Basic <secret>"},
             url: 'https://api.numerousapp.com/v1/metrics/' + appKey,
             method: "GET"
         }, function (error, response, body) {
