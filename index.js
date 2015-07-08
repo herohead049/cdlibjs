@@ -52,7 +52,11 @@ var getOldNumerous = function (appKey) {
     return new Promise(function (resolve, reject) {
 
         request({
+<<<<<<< HEAD
             headers: {'Authorization': "Basic "},
+=======
+            headers: {'Authorization': "Basic <secret>"},
+>>>>>>> origin/revamp-email
             url: 'https://api.numerousapp.com/v1/metrics/' + appKey,
             method: "GET"
         }, function (error, response, body) {
