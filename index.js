@@ -3,17 +3,17 @@
 /*jslint vars: true */
 /*jslint es5: true */
 
-"use strict";
+/*eslint-env node */
+/*eslint quotes: [2, "single"], curly: 2*/
 
-var request = require("request");
+'use strict';
+
+var request = require('request');
 var Promise = require('bluebird');
 var amqp = require('amqplib');
 var when = require('when');
-var email = require('emailjs');
+//var email = require('emailjs');
 var serialize = require('node-serialize');
-//var server = require('../cdlib/lib/server.js');
-//var email = require('../cdlib/lib/email.js');
-
 var server = require('../cdlibjs/lib/server.js');
 var email = require('../cdlibjs/lib/email.js');
 var util = require('../cdlibjs/lib/cdutils.js');
@@ -62,10 +62,10 @@ var getOldNumerous = function (appKey) {
         request({
 
             headers: {
-                'Authorization': "Basic <secret>"
+                'Authorization': 'Basic <secret>'
             },
             url: 'https://api.numerousapp.com/v1/metrics/' + appKey,
-            method: "GET"
+            method: 'GET'
         }, function (error, response, body) {
             //console.log(error);
             //console.log(response);
@@ -112,7 +112,7 @@ var updateNumerousKey = function (appKey, value, auth) {
 exports.updateNumerous = function (appID, value) {
     return new Promise(function (resolve, reject) {
 
-        var success = "";
+        var success = '';
 
         getOldNumerous(appID)
             .then(function (oldVal) {
@@ -141,7 +141,7 @@ exports.getRMQWorker = function (rabbitMQ) {
 
                 function doWork(msg) {
                     var body = msg.content.toString();
-                    console.log(" [x] Received '%s'", body);
+                    console.log(' [x] Received "%s"', body);
                     resolve({
                         body: body,
                         ch: ch,
@@ -152,7 +152,7 @@ exports.getRMQWorker = function (rabbitMQ) {
                     ch.consume(rabbitMQ.queue, doWork, {
                         noAck: false
                     });
-                    console.log(" [*] Waiting for messages. To exit press CTRL+C");
+                    console.log(' [*] Waiting for messages. To exit press CTRL+C');
                 });
                 return ok;
             });
