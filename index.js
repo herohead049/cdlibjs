@@ -1,5 +1,9 @@
 /*jslint nomen: true */
 /*jslint node:true */
+/*jslint vars: true */
+/*jslint es5: true */
+
+"use strict";
 
 var request = require("request");
 var Promise = require('bluebird');
@@ -12,6 +16,7 @@ var serialize = require('node-serialize');
 
 var server = require('../cdlibjs/lib/server.js');
 var email = require('../cdlibjs/lib/email.js');
+var util = require('../cdlibjs/lib/cdutils.js');
 var rabbitmq = require('../cdlibjs/lib/rabbitmq.js');
 
 //var cdlib = require('cdlib');
@@ -24,22 +29,26 @@ exports.sendEmailHtml = email.sendEmailHtml;
 exports.sendEMailToRabbit = rabbitmq.sendEMailToRabbit;
 exports.rabbitMQ = rabbitmq.rabbitMQ;
 
-
 exports.sendRMQWorker = function (rabbitMQ, message) {
-    "use strict";
     amqp.connect(rabbitMQ.rabbitMQAuthString()).then(function (conn) {
         return when(conn.createChannel().then(function (ch) {
             var q = rabbitMQ.queue,
-                ok = ch.assertQueue(q, {'durable': true });
+                ok = ch.assertQueue(q, {
+                    'durable': true
+                });
 
             return ok.then(function () {
                 var msg = process.argv.slice(2).join(' ') || message;
-      //ch.sendToQueue(q, new Buffer(msg), {deliveryMode: true, expiration: 1000});
-                ch.sendToQueue(q, new Buffer(msg), {deliveryMode: true});
-      //console.log(" [x] Sent '%s'", msg);
+                //ch.sendToQueue(q, new Buffer(msg), {deliveryMode: true, expiration: 1000});
+                ch.sendToQueue(q, new Buffer(msg), {
+                    deliveryMode: true
+                });
+                //console.log(" [x] Sent '%s'", msg);
                 return ch.close();
             });
-        })).ensure(function () { conn.close(); });
+        })).ensure(function () {
+            conn.close();
+        });
     }).then(null, console.warn);
 };
 
@@ -48,12 +57,13 @@ exports.sendRMQWorker = function (rabbitMQ, message) {
 // promise - getOldNumerous
 
 var getOldNumerous = function (appKey) {
-    "use strict";
     return new Promise(function (resolve, reject) {
 
         request({
 
-            headers: {'Authorization': "Basic <secret>"},
+            headers: {
+                'Authorization': "Basic <secret>"
+            },
             url: 'https://api.numerousapp.com/v1/metrics/' + appKey,
             method: "GET"
         }, function (error, response, body) {
@@ -78,10 +88,11 @@ var getOldNumerous = function (appKey) {
 // promise - updateNumerousKey
 
 var updateNumerousKey = function (appKey, value, auth) {
-    "use strict";
     return new Promise(function (resolve, reject) {
         request({
-            headers: {'Authorization': +auth},
+            headers: {
+                'Authorization': +auth
+            },
             url: 'https://api.numerousapp.com/v1/metrics/' + appKey + '/events',
             method: 'POST',
             body: '{"value": "' + value + '"}'
@@ -99,7 +110,6 @@ var updateNumerousKey = function (appKey, value, auth) {
 
 
 exports.updateNumerous = function (appID, value) {
-    "use strict";
     return new Promise(function (resolve, reject) {
 
         var success = "";
@@ -116,21 +126,32 @@ exports.updateNumerous = function (appID, value) {
 };
 
 exports.getRMQWorker = function (rabbitMQ) {
-    "use strict";
     return new Promise(function (resolve, reject) {
-
         amqp.connect(rabbitMQ.rabbitMQAuthString()).then(function (conn) {
-            process.once('SIGINT', function () { conn.close(); });
+            process.once('SIGINT', function () {
+                conn.close();
+            });
             return conn.createChannel().then(function (ch) {
-                var ok = ch.assertQueue(rabbitMQ.queue, {durable: true});
-                ok = ok.then(function () { ch.prefetch(1); });
+                var ok = ch.assertQueue(rabbitMQ.queue, {
+                    durable: true
+                });
+                ok = ok.then(function () {
+                    ch.prefetch(1);
+                });
+
                 function doWork(msg) {
                     var body = msg.content.toString();
                     console.log(" [x] Received '%s'", body);
-                    resolve({body: body, ch: ch, msg: msg});
+                    resolve({
+                        body: body,
+                        ch: ch,
+                        msg: msg
+                    });
                 }
                 ok = ok.then(function () {
-                    ch.consume(rabbitMQ.queue, doWork, {noAck: false});
+                    ch.consume(rabbitMQ.queue, doWork, {
+                        noAck: false
+                    });
                     console.log(" [*] Waiting for messages. To exit press CTRL+C");
                 });
                 return ok;
